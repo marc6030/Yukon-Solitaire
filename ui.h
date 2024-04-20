@@ -20,6 +20,7 @@ void printCard(void* card){
   }
 }
 
+/*
 char* getCard(void* card) {
     Card *c = (Card*)card;
     char* output = (char*)malloc(3 * sizeof(char)); // Allocate memory for the output
@@ -31,6 +32,43 @@ char* getCard(void* card) {
             sprintf(output, "[]");
         } else {
             sprintf(output, "%d%c", c->value, c->suit);
+        }
+    }
+
+    return output;
+}
+
+*/
+char* getCard(void* card) {
+    Card *c = (Card*)card;
+    char* output = (char*)malloc(3 * sizeof(char)); // Allocate memory for the output
+
+    if (c == NULL) {
+        output[0] = '\0'; // Return an empty string if card is NULL
+    } else {
+        if (c->faceDown) {
+            sprintf(output, "[]");
+        } else {
+            switch(c->value) {
+                case 1:
+                    sprintf(output, "A%c", c->suit);
+                    break;
+                case 10:
+                    sprintf(output, "T%c", c->suit);
+                    break;
+                case 11:
+                    sprintf(output, "J%c", c->suit);
+                    break;
+                case 12:
+                    sprintf(output, "Q%c", c->suit);
+                    break;
+                case 13:
+                    sprintf(output, "K%c", c->suit);
+                    break;
+                default:
+                    sprintf(output, "%d%c", c->value, c->suit);
+                    break;
+            }
         }
     }
 
@@ -91,4 +129,22 @@ void printPile(int pile[]) {
         printf("[%d]\t\t", pile[i]);       // Print the number of cards in the pile
     }
     printf("\n\n");
+}
+
+
+void displayDeck(Card* deck){
+  int i = 7;
+  Card* current = deck;
+  while(current != NULL){
+    char* card = getCard(current);
+    printf("%s\t", card);
+      //printf("%d%c\t", current->value, current->suit);
+      current = current->next;
+      i--;
+      if(i == 0){
+        i = 7;
+        printf("\n");
+      }
+  }
+  printf("\n");
 }
