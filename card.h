@@ -216,6 +216,10 @@ void removeEndCard(Card* list) {
     secondLast->next = NULL;
 }
 
+bool validMove(Card* from, Card* to){
+    return to->value == from->value+1 && to->suit != from->suit;
+}
+
 char* convertInputToMove(Card* list[], char* input){
 
     char* message = malloc(100 * sizeof(char));
@@ -259,17 +263,23 @@ char* convertInputToMove(Card* list[], char* input){
         return message;
       }
 
-      while(currentFrom != NULL && currentFrom->next != NULL && (currentFrom->next->value != value && currentFrom->next->suit != suit)){
-        currentFrom = currentFrom->next;
+      while(currentFrom != NULL && currentFrom->next != NULL){
+      if(currentFrom->next->value == value && currentFrom->next->suit == suit) {
+          break;
       }
+      currentFrom = currentFrom->next;
+  }
+
 
       currentTo = list[iTo];
       if(currentTo == NULL){
         list[iTo] = currentFrom->next;
+        currentFrom->next = NULL;
       } else {
         while(currentTo->next != NULL){
           currentTo = currentTo->next;
         }
+
         currentTo->next = currentFrom->next;
         currentFrom->next = NULL;
       }
@@ -296,6 +306,12 @@ char* convertInputToMove(Card* list[], char* input){
       sprintf(message, "cFrom: %c, cTo: %c, suit: %c, iFrom: %d, iTo: %d, value: %d", cFrom, cTo, suit, iFrom, iTo, value);
 
       currentFrom = list[iFrom];
+
+      if(currentFrom == NULL){
+        message = "From Pile cannot be empty";
+        return message;
+      }
+
       while(currentFrom != NULL && currentFrom->next != NULL){
         currentFrom = currentFrom->next;
       }
@@ -306,6 +322,10 @@ char* convertInputToMove(Card* list[], char* input){
       } else {
         while(currentTo != NULL && currentTo->next != NULL){
             currentTo = currentTo->next;
+        }
+        if(!validMove(currentFrom,currentTo)){
+          message = "invalid move";
+          return message;
         }
         currentTo->next = currentFrom;
       }
@@ -501,13 +521,3 @@ Card* createCardFromString(const char *cardString) {
 
     return createCard(value, suit, false);
 }
-
-/*
-void printDeck(Card *deck) {
-    Card *current = deck;
-    while (current != NULL) {
-        printf("Value: %d, Suit: %c, Face Down: %s\n", current->value, current->suit, current->faceDown ? "true" : "false");
-        current = current->next;
-    }
-}
-*/
