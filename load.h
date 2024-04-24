@@ -21,8 +21,6 @@ int checkFileLines(const char *filename, int lines) {
     }
 }
 
-
-
 bool isValidCard(char firstChar) {
     switch (firstChar) {
         case 'A':
@@ -38,9 +36,9 @@ bool isValidCard(char firstChar) {
         case 'J':
         case 'Q':
         case 'K':
-            return true; // Return true if the character is one of the specified cards
+            return true;
         default:
-            return false; // Return false otherwise
+            return false;
     }
 }
 

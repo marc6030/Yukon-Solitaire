@@ -9,12 +9,6 @@
 #include "load.h"
 #include "command.h"
 
-
-// Function prototypes
-void initializeGame(Card *list[], int pile[], char lastCommand[], Card** deck);
-void playGame(Card *list[], int pile[], char lastCommand[], Card** deck);
-void autoMove(Card* list[], int pile[]);
-
 // Function to initialize the game
 void initializeGame(Card *list[], int pile[], char lastCommand[], Card **deck) {
 
@@ -143,21 +137,18 @@ void playGame(Card *list[], int pile[], char lastCommand[], Card** deck) {
 
     bool loop = true;
 
-    list[3] = NULL;
-
     while(loop) {
+        system("cls");
+        printGameState(list);
+        printPile(list);
+        printf("LAST Command: %s", lastCommand);
+        printf("Message: %s\n", message);
 
-        system("cls");  // Clear the console screen
-        printGameState(list);  // Print the current game state
-        printPile(list);        // Print the number of cards in the piles
-        printf("LAST Command: %s", lastCommand);  // Print the last command entered by the player
-        printf("Message: %s\n", message);            // Print a message indicating game status
+        char input[100];
+        printf("INPUT > ");
+        fgets(input, sizeof(input), stdin);
 
-        char input[100];       // Variable to store player input
-        printf("INPUT > ");    // Prompt the player to enter a command
-        fgets(input, sizeof(input), stdin);  // Read player input from the console
-
-        int status = checkCommand(input);   // Check and process the player's command
+        int status = checkCommand(input);
 
         if(status == 9){
           loop = false;
@@ -165,40 +156,28 @@ void playGame(Card *list[], int pile[], char lastCommand[], Card** deck) {
 
         message = convertInputToMove(list, input);
 
-        if(status == 10){
-          //message = convertInputToMove(list, input);    // Convert player's input to a move action
-
-          // Nået her til!!!!!!!!!!!!!!!!!!!!!!!!! UNlock 2 næster functioner
-        //  moveToPile(list,pile);             // Moves end card to pile
-        //  updateEndCard(list);              // Update the end cards in each list
-        }
-
+        //  moveToPile(list,pile);
+        //  updateEndCard(list);
+        
         if(status != 10 && status != 9){
           printf("Message: %s\n", "COMMAND NOT FOUND");
         }
-
-        strcpy(lastCommand, input);  // Store the player's command as the last command entered
-
+        strcpy(lastCommand, input);
     }
 }
 
-
-
 int main() {
-    char lastCommand[100] = "\n";  // Variable to store the last command entered by the player
-  //  Card *list[7];                 // Array to store pointers to 7 card lists
+    char lastCommand[100] = "\n";
     Card *list[11];
-    int pile[4] = {0};             // Array to store the number of cards in 4 card piles
+    int pile[4] = {0};
     Card *deck = NULL;
 
-
     while(1){
-      initializeGame(list, pile, lastCommand, &deck); // Initialize the game
+      initializeGame(list, pile, lastCommand, &deck);
       if(deck == NULL){
         printf("deck is NULL!!!\n");
       }
-      playGame(list, pile, lastCommand, &deck);        // Start playing the game
+      playGame(list, pile, lastCommand, &deck);
     }
-
-    return 0;  // Return 0 to indicate successful program execution
+    return 0;
 }
