@@ -225,5 +225,4 @@ Card* loadFile(const char *filename, Card* deck){
   int numberoflines;
   char** lines = readLinesFromFile(filename,&numberoflines);
   return createDeckFromLines(lines,numberoflines);
-  //printDeck(deck);
 }

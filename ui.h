@@ -20,25 +20,7 @@ void printCard(void* card){
   }
 }
 
-/*
-char* getCard(void* card) {
-    Card *c = (Card*)card;
-    char* output = (char*)malloc(3 * sizeof(char)); // Allocate memory for the output
 
-    if (c == NULL) {
-        output[0] = '\0'; // Return an empty string if card is NULL
-    } else {
-        if (c->faceDown) {
-            sprintf(output, "[]");
-        } else {
-            sprintf(output, "%d%c", c->value, c->suit);
-        }
-    }
-
-    return output;
-}
-
-*/
 char* getCard(void* card) {
     Card *c = (Card*)card;
     char* output = (char*)malloc(3 * sizeof(char)); // Allocate memory for the output
@@ -84,9 +66,11 @@ void printGameState(Card* cards[]) {
     int longestLinkList = 0;
     int lengths[7];
     for (int i = 0; i < 7; i++) {
-        lengths[i] = listLength(cards[i]);
-        if (lengths[i] > longestLinkList) {
-            longestLinkList = lengths[i];
+        if (cards[i] != NULL) { // Check if the linked list is not empty
+            lengths[i] = listLength(cards[i]);
+            if (lengths[i] > longestLinkList) {
+                longestLinkList = lengths[i];
+            }
         }
     }
 
@@ -100,12 +84,14 @@ void printGameState(Card* cards[]) {
 
     // Fill double array
     for (int i = 0; i < 7; i++) {
-        int j = 0;
-        Card *current = cards[i];
-        while (current != NULL) {
-            board[i][j] = getCard(current);
-            j++;
-            current = current->next;
+        if (cards[i] != NULL) { // Check if the linked list is not empty
+            int j = 0;
+            Card *current = cards[i];
+            while (current != NULL) {
+                board[i][j] = getCard(current);
+                j++;
+                current = current->next;
+            }
         }
     }
 
@@ -120,13 +106,16 @@ void printGameState(Card* cards[]) {
 
 
 
-void printPile(int pile[]) {
-    char suits[] = {'H', 'D', 'C', 'S'};
 
+void printPile(Card* pile[]) {
     printf("\n");
     for (int i = 0; i < 4; i++) {
-        printf("%c%d ", suits[i], i + 1);  // Print the suit followed by the pile number
-        printf("[%d]\t\t", pile[i]);       // Print the number of cards in the pile
+        printf("F%d ",i + 1);  // Print the suit followed by the pile number
+        if(pile[i+7] == NULL){
+          printf("[]\t\t");
+        } else {
+          printf("%d%c\t\t", getEndCard(pile[i+7])->value, getEndCard(pile[i+7])->suit);       // Print the number of cards in the pile
+        }
     }
     printf("\n\n");
 }
@@ -138,7 +127,6 @@ void displayDeck(Card* deck){
   while(current != NULL){
     char* card = getCard(current);
     printf("%s\t", card);
-      //printf("%d%c\t", current->value, current->suit);
       current = current->next;
       i--;
       if(i == 0){

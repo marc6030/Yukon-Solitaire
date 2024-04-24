@@ -6,6 +6,23 @@ typedef struct Card {
     struct Card *next;
 } Card;
 
+// Function to check if a card exists in a linked list
+bool cardExists(Card* head, int value, char suit) {
+    // Check if the linked list is empty
+    if (head == NULL) {
+        return false;
+    }
+
+    Card* current = head;
+    while (current != NULL) {
+        if (current->value == value && current->suit == suit) {
+            return true; // Card exists in the linked list
+        }
+        current = current->next;
+    }
+    return false; // Card does not exist in the linked list
+}
+
 // Function to create a new card
 Card* createCard(int value, char suit, bool faceDown) {
     Card *newCard = (Card*)malloc(sizeof(Card));
@@ -206,57 +223,6 @@ Card* getEndCard(Card* card){
   return current;
 }
 
-void move(Card* card1, Card* card2, int i, char c) {
-    // Hvis det første kort i card2 matcher værdien og kulør
-    if (card2->value == i && card2->suit == c) {
-        // Find slutningen af card1
-        Card* endCard1 = card1;
-        while (endCard1->next != NULL) {
-            endCard1 = endCard1->next;
-        }
-        // Flyt card2 til slutningen af card1
-        endCard1->next = card2;
-        card2 = NULL;
-        return;
-    }
-
-    // Søg i resten af card2 for at finde det matchende kort
-    Card* prev = card2;
-    Card* current = card2->next;
-    while (current != NULL) {
-        if (current->value == i && current->suit == c) {
-            // Find slutningen af card1
-            Card* endCard1 = card1;
-            while (endCard1->next != NULL) {
-                endCard1 = endCard1->next;
-            }
-            // Flyt current til slutningen af card1
-            endCard1->next = current;
-            // Opdater forbindelserne i card2
-            prev->next = NULL;
-            return;
-        }
-        prev = current;
-        current = current->next;
-    }
-}
-
-void convertInputToMove(Card* list[], char* input) {
-    // Analyser inputstrengen
-    int pile1;
-    int pile2;
-    int value;
-    char suit;
-
-    sscanf(input, "C%d:%d%c->C%d", &pile2, &value, &suit, &pile1);
-
-    pile1--;
-    pile2--;
-
-    // Kald move-funktionen med de genererede parametre
-    move(list[pile1], list[pile2], value, suit);
-}
-
 // Function to get the length of the linked list
 int getLength(Card *head) {
     int length = 0;
@@ -265,6 +231,138 @@ int getLength(Card *head) {
         head = head->next;
     }
     return length;
+}
+
+void removeEndCard(Card* list) {
+    if (list == NULL) {
+        return;  // Hvis listen er tom, skal der ikke gøres noget
+    }
+
+    if(getLength(list) == 1){
+      return;
+    }
+
+    // Find det næstsidste kort i listen
+    Card* secondLast = list;
+    while (secondLast->next->next != NULL) {
+        secondLast = secondLast->next;
+    }
+
+    // Gem det sidste kort
+    Card* lastCard = secondLast->next;
+
+    // Fjern forbindelsen til det sidste kort
+    secondLast->next = NULL;
+}
+
+char* convertInputToMove(Card* list[], char* input){
+
+    char* message = malloc(100 * sizeof(char));
+
+    Card* currentFrom;
+    Card* currentTo;
+
+    int length = strlen(input);
+    char cFrom, cTo, suit;
+    int iFrom, iTo, value;
+
+    if(length == 10){
+      sscanf(input,"%c%d:%d%c->%c%d",&cFrom,&iFrom,&value,&suit,&cTo,&iTo);
+      if(cFrom == 'F'){
+        iFrom += 7;
+      }
+      if(cTo == 'F'){
+        iTo += 7;
+      }
+      iFrom--;
+      iTo--;
+
+      // Find the right element in the list
+      bool existsInList = false;
+      currentFrom = list[iFrom];
+      while(currentFrom != NULL){
+        if(currentFrom->value == value && currentFrom->suit == suit){
+          existsInList = true;
+        }
+        currentFrom = currentFrom->next;
+      }
+      if(!existsInList){
+        message = "Error card does not exist in pile";
+        return message;
+      }
+
+
+      currentFrom = list[iFrom];
+
+      if(currentFrom == NULL){
+        message = "Error FROM list is empty";
+        return message;
+      }
+
+      while(currentFrom != NULL && currentFrom->next != NULL && (currentFrom->next->value != value && currentFrom->next->suit != suit)){
+        currentFrom = currentFrom->next;
+      }
+
+      currentTo = list[iTo];
+      if(currentTo == NULL){
+        list[iTo] = currentFrom->next;
+      } else {
+        while(currentTo->next != NULL){
+          currentTo = currentTo->next;
+        }
+        currentTo->next = currentFrom->next;
+        currentFrom->next = NULL;
+      }
+
+      if(list[iFrom]->value == value && list[iFrom]->suit == suit){
+        currentTo->next = list[iFrom];
+        list[iFrom] = NULL;
+        return message;
+      }
+
+    }
+
+    if(length == 7){
+      sscanf(input,"%c%d->%c%d",&cFrom,&iFrom,&cTo,&iTo);
+      if(cFrom == 'F'){
+        iFrom += 7;
+      }
+      if(cTo == 'F'){
+        iTo += 7;
+      }
+      iFrom--;
+      iTo--;
+
+      sprintf(message, "cFrom: %c, cTo: %c, suit: %c, iFrom: %d, iTo: %d, value: %d", cFrom, cTo, suit, iFrom, iTo, value);
+
+
+      // Find last element in linked list
+      currentFrom = list[iFrom];
+      while(currentFrom != NULL && currentFrom->next != NULL){
+        currentFrom = currentFrom->next;
+      }
+
+
+      // Find last element in linked list
+      currentTo = list[iTo];
+      if(currentTo == NULL){
+        list[iTo] = currentFrom;
+      } else {
+        while(currentTo != NULL && currentTo->next != NULL){
+            currentTo = currentTo->next;
+        }
+        currentTo->next = currentFrom;
+      }
+
+      if(currentFrom == list[iFrom]){
+        list[iFrom] = NULL;
+      } else {
+        removeEndCard(list[iFrom]);
+      }
+    }
+
+
+    return message;
 }
 
 // Function to get the node at a specific index in the linked list
@@ -389,27 +487,6 @@ void updateEndCard(Card* list[]){
   }
 }
 
-void removeEndCard(Card* list) {
-    if (list == NULL) {
-        return;  // Hvis listen er tom, skal der ikke gøres noget
-    }
-
-    if(getLength(list) == 1){
-      list = NULL;
-    }
-
-    // Find det næstsidste kort i listen
-    Card* secondLast = list;
-    while (secondLast->next->next != NULL) {
-        secondLast = secondLast->next;
-    }
-
-    // Gem det sidste kort
-    Card* lastCard = secondLast->next;
-
-    // Fjern forbindelsen til det sidste kort
-    secondLast->next = NULL;
-}
 
 
 void setElementToNull(Card *list[], int index) {
