@@ -429,9 +429,12 @@ void shuffleCards(Card **deck, int splitPosition) {
 
 void updateEndCard(Card* list[]){
   for (int i = 0; i < 7; i++) {
-    Card* current = getEndCard(list[i]);
+    Card* current = list[i];
     if(current == NULL){
       continue;
+    }
+    while(current->next != NULL){
+      current = current->next;
     }
     if(current->faceDown == true){
       current->faceDown = false;
@@ -447,36 +450,36 @@ void setElementToNull(Card *list[], int index) {
     }
 }
 
-void moveToPile(Card* list[], int pile[]){
-  for(int i = 0;i<4;i++){
-    char c;
-    switch(i) {
-        case 0:
-            c = 'H';
-            break;
-        case 1:
-            c = 'D';
-            break;
-        case 2:
-            c = 'C';
-            break;
-        case 3:
-            c = 'S';
-            break;
-        default:
-            break;
-    }
-    for(int j = 0;j<7;j++){
-      if(getEndCard(list[j])->suit == c && pile[i] + 1 == getEndCard(list[j])->value){
-        if(getLength(list[j]) == 1){
-          setElementToNull(list,j);
-        }
-        pile[i]++;
-        removeEndCard(list[j]);
+void moveToPile(Card* lists[], Card* pile[]) {
+  for (int i = 0; i < 7; i++) {
+      Card *current = lists[i];
+      Card *prev = NULL;
+      if(current == NULL){
+        continue;
       }
-    }
+      while(current->next != NULL){
+        prev = current;
+        current = current->next;
+      }
+      for (int j = 0; j < 4; j++) {
+        Card* lastInPile = pile[j];
+        while (lastInPile->next != NULL) {
+          lastInPile = lastInPile->next;
+        }
+        if(current->suit == lastInPile->suit && current->value == lastInPile->value+1){
+          lastInPile->next = current;
+          if(prev == NULL){
+            lists[i] = NULL;
+          } else {
+            prev->next = NULL;
+          }
+          moveToPile(lists,pile);
+        }
+      }
   }
 }
+
+
 
 Card* createCardFromString(const char *cardString) {
     if (cardString == NULL || cardString[0] == '\0' || cardString[1] == '\0') {

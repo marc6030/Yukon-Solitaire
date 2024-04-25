@@ -10,7 +10,7 @@
 #include "command.h"
 
 // Function to initialize the game
-void initializeGame(Card *list[], int pile[], char lastCommand[], Card **deck) {
+void initializeGame(Card *list[], char lastCommand[], Card **deck) {
 
     //Card *deck = NULL;
     char inp[100];
@@ -93,7 +93,7 @@ void initializeGame(Card *list[], int pile[], char lastCommand[], Card **deck) {
 }
 
 // Function to play the game
-void playGame(Card *list[], int pile[], char lastCommand[], Card** deck) {
+void playGame(Card *list[], char lastCommand[], Card** deck) {
 
     char* message = malloc(100 * sizeof(char));
 
@@ -102,6 +102,7 @@ void playGame(Card *list[], int pile[], char lastCommand[], Card** deck) {
     }
 
     Card* temp = copy_linked_list(*deck);
+    temp = temp->next;
 
     // Assign cards from the shuffled deck to the 7 lists on the game board
     list[0] = temp;
@@ -115,10 +116,11 @@ void playGame(Card *list[], int pile[], char lastCommand[], Card** deck) {
     list[5] = getCardByIndex(temp,31);
     list[6] = getCardByIndex(temp,41);
 
-    list[7] = NULL;
-    list[8] = NULL;
-    list[9] = NULL;
-    list[10] = NULL;
+    list[7] = createCard(0,'C',true);
+    list[8] = createCard(0,'D',true);
+    list[9] = createCard(0,'H',true);
+    list[10] = createCard(0,'S',true);
+
 
     // Shortens the length of each linked list
     setCardAsEndCard(getCardByIndex(list[0],0));
@@ -156,9 +158,10 @@ void playGame(Card *list[], int pile[], char lastCommand[], Card** deck) {
 
         message = convertInputToMove(list, input);
 
-        //  moveToPile(list,pile);
-        //  updateEndCard(list);
-        
+        Card* cardB[] = {list[7],list[8],list[9],list[10]};
+        moveToPile(list,cardB);
+        updateEndCard(list);
+
         if(status != 10 && status != 9){
           printf("Message: %s\n", "COMMAND NOT FOUND");
         }
@@ -169,15 +172,14 @@ void playGame(Card *list[], int pile[], char lastCommand[], Card** deck) {
 int main() {
     char lastCommand[100] = "\n";
     Card *list[11];
-    int pile[4] = {0};
     Card *deck = NULL;
 
     while(1){
-      initializeGame(list, pile, lastCommand, &deck);
+      initializeGame(list, lastCommand, &deck);
       if(deck == NULL){
         printf("deck is NULL!!!\n");
       }
-      playGame(list, pile, lastCommand, &deck);
+      playGame(list, lastCommand, &deck);
     }
     return 0;
 }
