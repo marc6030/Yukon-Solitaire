@@ -62,6 +62,11 @@ int checkCommand(char command[]) {
         return 10;
     }
 
+    // Check for C command with specific format
+    if (command[2] == '-' && command[3] == '>' && command[6] == '\n') {
+        return 10;
+    }
+
     // Default case for unrecognized commands
     return -1;
 }

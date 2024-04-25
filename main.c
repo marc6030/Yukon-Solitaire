@@ -156,9 +156,12 @@ void playGame(Card *list[], char lastCommand[], Card** deck) {
           loop = false;
         }
 
-        message = convertInputToMove(list, input);
+        if(status == 10){
+          message = convertInputToMove(list, input);
+        }
 
         Card* cardB[] = {list[7],list[8],list[9],list[10]};
+        
         moveToPile(list,cardB);
         updateEndCard(list);
 
