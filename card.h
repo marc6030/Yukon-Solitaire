@@ -233,6 +233,12 @@ char* convertInputToMove(Card* list[], char* input){
 
     if(length == 10){
       sscanf(input,"%c%d:%d%c->%c%d",&cFrom,&iFrom,&value,&suit,&cTo,&iTo);
+      
+      if(cFrom != 'C' || cFrom != 'F' || cTo != 'C' || cTo != 'F'){
+        message = "Piles/columns has to start with C or F";
+        return message;
+      }
+
       if(cFrom == 'F'){
         iFrom += 7;
       }
@@ -294,6 +300,12 @@ char* convertInputToMove(Card* list[], char* input){
 
     if(length == 7){
       sscanf(input,"%c%d->%c%d",&cFrom,&iFrom,&cTo,&iTo);
+
+      if(cFrom != 'C' || cFrom != 'F' || cTo != 'C' || cTo != 'F'){
+        message = "Piles/columns has to start with C or F";
+        return message;
+      }
+
       if(cFrom == 'F'){
         iFrom += 7;
       }

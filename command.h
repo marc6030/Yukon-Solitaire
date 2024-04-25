@@ -58,7 +58,7 @@ int checkCommand(char command[]) {
     }
 
     // Check for C command with specific format
-    if (command[0] == 'C' && command[2] == ':' && command[5] == '-' && command[6] == '>' && command[9] == '\n') {
+    if (command[2] == ':' && command[5] == '-' && command[6] == '>' && command[9] == '\n') {
         return 10;
     }
 
