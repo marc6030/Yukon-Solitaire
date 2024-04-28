@@ -1,2 +1,2 @@
 all:
-	gcc -o main main.c -Isrc/include -Lsrc/lib -lSDL2
+	gcc -o main main.c -Iinclude -Llib -lSDL2 -lSDL2_ttf

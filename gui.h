@@ -10,6 +10,7 @@ void drawCard(SDL_Renderer* renderer, int x, int y, int width, int height, int v
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     SDL_Rect rect = { 100, 100, 200, 150 }; // x, y, bredde, høyde
     SDL_RenderDrawRect(renderer, &rect);
+  //  SDLTest_DrawCharacter(renderer,100,100,'C');
 }
 
 
@@ -23,6 +24,13 @@ DWORD WINAPI createWindow(LPVOID lpParam) {
         printf("Error initializing SDL: %s\n", SDL_GetError());
         return 1;
     }
+
+    // Initialize TTF
+    if (TTF_Init() != 0) {
+        printf("Error initializing TTF: %s\n", SDL_GetError());
+        return 1;
+    }
+
 
     // Create a window
     SDL_Window* window = SDL_CreateWindow(
