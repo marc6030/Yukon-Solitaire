@@ -1,3 +1,7 @@
+#define SDL_MAIN_HANDLED
+#include "SDL2/SDL.h"
+#include <windows.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -8,6 +12,7 @@
 #include "ui.h"
 #include "load.h"
 #include "command.h"
+#include "gui.h"
 
 // Function to initialize the game
 void initializeGame(Card *list[], char lastCommand[], Card **deck) {
@@ -161,7 +166,7 @@ void playGame(Card *list[], char lastCommand[], Card** deck) {
         }
 
         Card* cardB[] = {list[7],list[8],list[9],list[10]};
-        
+
         moveToPile(list,cardB);
         updateEndCard(list);
 
@@ -172,17 +177,37 @@ void playGame(Card *list[], char lastCommand[], Card** deck) {
     }
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+
     char lastCommand[100] = "\n";
     Card *list[11];
     Card *deck = NULL;
 
+    //createWindow();
+    HANDLE thread;
+    DWORD threadId;
+
+    // Initialize shared data
+    SharedData *sharedData = (SharedData*)malloc(sizeof(SharedData));
+
+    //sharedData->lastCommand = lastCommand;
+
+    // Create a thread to run the createWindow function
+    thread = CreateThread(NULL, 0, createWindow, sharedData, 0, &threadId);
+    if (thread == NULL) {
+        printf("Error creating thread\n");
+        return 1;
+    }
+
+
     while(1){
-      initializeGame(list, lastCommand, &deck);
+    //  initializeGame(list, lastCommand, &deck);
+      initializeGame(sharedData->list, sharedData->lastCommand,&(sharedData->deck));
       if(deck == NULL){
-        printf("deck is NULL!!!\n");
+      //  printf("deck is NULL!!!\n");
       }
-      playGame(list, lastCommand, &deck);
+    //  playGame(list, lastCommand, &deck);
+      playGame(sharedData->list, sharedData->lastCommand, &(sharedData->deck));
     }
     return 0;
 }
