@@ -28,16 +28,24 @@ void renderText(const char *text, int x, int y, SDL_Renderer* renderer, TTF_Font
     SDL_DestroyTexture(texture);
 }
 
-void drawCard(SDL_Renderer* renderer, int x, int y, int width, int height, int value, char suit, TTF_Font* font) {
-    char buffer[50];
-    sprintf(buffer, "%d%c", value, suit);
-
-    SDL_Rect rect = { x, y, width, height }; // x, y, bredde, høyde
-    SDL_RenderDrawRect(renderer, &rect);
-    if(suit == 'D' || suit == 'H'){
-      renderText(buffer, 100, 100, renderer, font , 255, 0, 0);
+void drawCard(SDL_Renderer* renderer, int x, int y, int width, int height, int value, char suit, bool faceDown, TTF_Font* font) {
+    if(faceDown){
+      SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+      SDL_Rect rect = { x, y, width, height }; // x, y, bredde, høyde
+      SDL_RenderFillRect(renderer, &rect);
     } else {
-      renderText(buffer, 100, 100, renderer, font , 0, 0, 0);
+      SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+
+      char buffer[50];
+      sprintf(buffer, "%d%c", value, suit);
+
+      SDL_Rect rect = { x, y, width, height }; // x, y, bredde, høyde
+      SDL_RenderDrawRect(renderer, &rect);
+      if(suit == 'D' || suit == 'H'){
+        renderText(buffer, x, y, renderer, font , 255, 0, 0);
+      } else {
+        renderText(buffer, x, y, renderer, font , 0, 0, 0);
+      }
     }
 }
 
@@ -60,18 +68,47 @@ DWORD WINAPI createWindow(LPVOID lpParam) {
             }
         }
 
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        SDL_RenderClear(renderer);
+      SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+      SDL_RenderClear(renderer);
 
-        // Render text
-      //  renderText("Hello, SDL!", 100, 100, renderer, font); // Example text rendering
+      int cardSize = 50;
+      // draw Cards
+      for(int i = 0;i<7;i++){
+        if(sharedData->list[i] != NULL){
+              Card* current = sharedData->list[i];
+              int j = 0;
+              while(current->next != NULL){
+                int value = current->value;
+                char suit = current->suit;
+                bool faceDown = current->faceDown;
 
-        if(sharedData->list[0] != NULL){
-            int value = sharedData->list[0]->value;
-            char suit = sharedData->list[0]->suit;
+                drawCard(renderer, i*cardSize, j*cardSize, cardSize, cardSize, value, suit,faceDown , font);
+                j++;
+                current = current->next;
+              }
 
-            drawCard(renderer, 100, 100, 200, 300, value, suit, font);
-        }
+              int value = current->value;
+              char suit = current->suit;
+              bool faceDown = current->faceDown;
+
+              drawCard(renderer, i*cardSize, j*cardSize, cardSize, cardSize, value, suit,faceDown , font);
+          }
+
+          for(int i = 0;i<4;i++){
+            if(sharedData->list[i+7] != NULL){
+              Card* current = sharedData->list[i+7];
+              while(current->next != NULL){
+                current = current->next;
+              }
+              int value = current->value;
+              char suit = current->suit;
+              bool faceDown = current->faceDown;
+
+              drawCard(renderer, i*cardSize, 600-cardSize, cardSize, cardSize, value, suit, faceDown, font);
+            }
+          }
+
+      }
 
         SDL_RenderPresent(renderer);
     }
