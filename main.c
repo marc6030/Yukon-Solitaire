@@ -184,14 +184,11 @@ int main(int argc, char *argv[]) {
     Card *list[11];
     Card *deck = NULL;
 
-    //createWindow();
     HANDLE thread;
     DWORD threadId;
 
     // Initialize shared data
     SharedData *sharedData = (SharedData*)malloc(sizeof(SharedData));
-
-    //sharedData->lastCommand = lastCommand;
 
     // Create a thread to run the createWindow function
     thread = CreateThread(NULL, 0, createWindow, sharedData, 0, &threadId);
@@ -202,12 +199,10 @@ int main(int argc, char *argv[]) {
 
 
     while(1){
-    //  initializeGame(list, lastCommand, &deck);
       initializeGame(sharedData->list, sharedData->lastCommand,&(sharedData->deck));
       if(deck == NULL){
-      //  printf("deck is NULL!!!\n");
+        continue;
       }
-    //  playGame(list, lastCommand, &deck);
       playGame(sharedData->list, sharedData->lastCommand, &(sharedData->deck));
     }
     return 0;

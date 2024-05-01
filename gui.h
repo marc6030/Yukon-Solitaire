@@ -15,9 +15,8 @@ void cleanup() {
     SDL_Quit();
 }
 
-
 void renderText(const char *text, int x, int y, SDL_Renderer* renderer, TTF_Font* font, int r, int g, int b) {
-    SDL_Color color = {r, g, b}; // White color
+    SDL_Color color = {r, g, b};
     SDL_Surface *surface = TTF_RenderText_Solid(font, text, color);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
 
@@ -31,7 +30,7 @@ void renderText(const char *text, int x, int y, SDL_Renderer* renderer, TTF_Font
 void drawCard(SDL_Renderer* renderer, int x, int y, int width, int height, int value, char suit, bool faceDown, TTF_Font* font) {
     if(faceDown){
       SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-      SDL_Rect rect = { x, y, width, height }; // x, y, bredde, høyde
+      SDL_Rect rect = { x, y, width, height };
       SDL_RenderFillRect(renderer, &rect);
     } else {
       SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
@@ -39,7 +38,7 @@ void drawCard(SDL_Renderer* renderer, int x, int y, int width, int height, int v
       char buffer[50];
       sprintf(buffer, "%d%c", value, suit);
 
-      SDL_Rect rect = { x, y, width, height }; // x, y, bredde, høyde
+      SDL_Rect rect = { x, y, width, height };
       SDL_RenderDrawRect(renderer, &rect);
       if(suit == 'D' || suit == 'H'){
         renderText(buffer, x, y, renderer, font , 255, 0, 0);
@@ -52,12 +51,12 @@ void drawCard(SDL_Renderer* renderer, int x, int y, int width, int height, int v
 DWORD WINAPI createWindow(LPVOID lpParam) {
     SharedData* sharedData = (SharedData*)lpParam;
 
-    init(); // Initialize SDL and TTF
+    init();
 
     SDL_Window* window = SDL_CreateWindow("SDL Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_SHOWN);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-    TTF_Font* font = TTF_OpenFont("font.ttf", 24); // Load your TrueType font here
+    TTF_Font* font = TTF_OpenFont("font.ttf", 24);
 
     int running = 1;
     while (running) {
@@ -72,7 +71,7 @@ DWORD WINAPI createWindow(LPVOID lpParam) {
       SDL_RenderClear(renderer);
 
       int cardSize = 50;
-      // draw Cards
+      // Draw cards
       for(int i = 0;i<7;i++){
         if(sharedData->list[i] != NULL){
               Card* current = sharedData->list[i];
@@ -113,11 +112,11 @@ DWORD WINAPI createWindow(LPVOID lpParam) {
         SDL_RenderPresent(renderer);
     }
 
-    TTF_CloseFont(font); // Close the font
+    TTF_CloseFont(font);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
 
-    cleanup(); // Cleanup SDL and TTF
+    cleanup();
 
     return 0;
 }

@@ -3,11 +3,11 @@ int checkFileLines(const char *filename, int lines) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         perror("Error opening file");
-        return -1; // Return -1 if file couldn't be opened
+        return -1;
     }
 
     int lineCount = 0;
-    char buffer[1024]; // Buffer to hold each line
+    char buffer[1024];
     while (fgets(buffer, sizeof(buffer), file) != NULL) {
         lineCount++;
     }
@@ -15,9 +15,9 @@ int checkFileLines(const char *filename, int lines) {
     fclose(file);
 
     if (lineCount == lines) {
-        return 1; // Return 1 if file has 52 lines
+        return 1;
     } else {
-        return 0; // Return 0 if file doesn't have 52 lines
+        return 0;
     }
 }
 
@@ -47,20 +47,20 @@ int checkFirstCard(const char *filename) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         perror("Error opening file");
-        return -1; // Return -1 if file couldn't be opened
+        return -1;
     }
 
-    char buffer[1024]; // Buffer to hold each line
+    char buffer[1024];
     while (fgets(buffer, sizeof(buffer), file) != NULL) {
         if (!isValidCard(buffer[0])) {
             fclose(file);
-            return 0; // Return 0 if the first character in any line is not a valid card
+            return 0;
         }
     }
 
     fclose(file);
 
-    return 1; // Return 1 if the first character in each line is a valid card
+    return 1;
 }
 
 bool isValidSuit(char secondChar) {
@@ -69,9 +69,9 @@ bool isValidSuit(char secondChar) {
         case 'D':
         case 'H':
         case 'C':
-            return true; // Return true if the character is one of the specified suits
+            return true;
         default:
-            return false; // Return false otherwise
+            return false;
     }
 }
 
@@ -79,38 +79,38 @@ int checkSecondSuit(const char *filename) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         perror("Error opening file");
-        return -1; // Return -1 if file couldn't be opened
+        return -1;
     }
 
-    char buffer[1024]; // Buffer to hold each line
+    char buffer[1024];
     while (fgets(buffer, sizeof(buffer), file) != NULL) {
         if (!isValidSuit(buffer[1])) {
             fclose(file);
-            return 0; // Return 0 if the second character in any line is not a valid suit
+            return 0;
         }
     }
 
     fclose(file);
 
-    return 1; // Return 1 if the second character in each line is a valid suit
+    return 1;
 }
 
 int checkDuplicates(const char *filename) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         perror("Error opening file");
-        return -1; // Return -1 if file couldn't be opened
+        return -1;
     }
 
-    bool cardSuits[13][4] = {false}; // Array to keep track of seen combinations
-    char buffer[1024]; // Buffer to hold each line
+    bool cardSuits[13][4] = {false};
+    char buffer[1024];
     while (fgets(buffer, sizeof(buffer), file) != NULL) {
         char firstChar = buffer[0];
         char secondChar = buffer[1];
 
         if (!isValidCard(firstChar) || !isValidSuit(secondChar)) {
             fclose(file);
-            return 0; // Return 0 if the combination is invalid
+            return 0;
         }
 
         int cardIndex = firstChar >= '2' && firstChar <= '9' ? firstChar - '2' : (firstChar == 'T' ? 8 : (firstChar == 'J' ? 9 : (firstChar == 'Q' ? 10 : (firstChar == 'K' ? 11 : 12))));
@@ -118,7 +118,7 @@ int checkDuplicates(const char *filename) {
 
         if (cardSuits[cardIndex][suitIndex]) {
             fclose(file);
-            return 0; // Return 0 if the combination has been seen before
+            return 0;
         }
 
         cardSuits[cardIndex][suitIndex] = true;
@@ -126,12 +126,8 @@ int checkDuplicates(const char *filename) {
 
     fclose(file);
 
-    return 1; // Return 1 if all combinations are unique
+    return 1;
 }
-
-
-#define MAX_LINES 52
-#define MAX_LINE_LENGTH 256
 
 // Function to read lines from a file into a char* array
 char **readLinesFromFile(const char *filename, int *numLines) {
@@ -141,22 +137,20 @@ char **readLinesFromFile(const char *filename, int *numLines) {
         return NULL;
     }
 
-    char **lines = (char **)malloc(MAX_LINES * sizeof(char *));
+    char **lines = (char **)malloc(52 * sizeof(char *));
     if (lines == NULL) {
         fclose(file);
         perror("Memory allocation failed");
         return NULL;
     }
 
-    char line[MAX_LINE_LENGTH];
+    char line[256];
     int count = 0;
     while (fgets(line, sizeof(line), file) != NULL) {
-        // Allocate memory for the line and copy it
         lines[count] = strdup(line);
         if (lines[count] == NULL) {
             fclose(file);
             perror("Memory allocation failed");
-            // Free previously allocated memory
             for (int i = 0; i < count; i++) {
                 free(lines[i]);
             }
@@ -164,8 +158,7 @@ char **readLinesFromFile(const char *filename, int *numLines) {
             return NULL;
         }
         count++;
-        // Check if the number of lines exceeds MAX_LINES
-        if (count >= MAX_LINES) {
+        if (count >= 52) {
             break;
         }
     }
@@ -195,9 +188,7 @@ Card* createDeckFromLines(char **lines, int numLines) {
     return deck;
 }
 
-
 Card* loadFile(const char *filename, Card* deck){
-  //  printf("Checking file: %s\n", filename);
     if (!access(filename, F_OK)) {
     } else {
       perror("Error checking file existence");
@@ -206,19 +197,19 @@ Card* loadFile(const char *filename, Card* deck){
 
   if(!checkFileLines(filename,52)){
     printf("File does not have 52 lines\n");
-    return 0; // not 52 lines
+    return 0;
   }
   if(!checkFirstCard(filename)){
     printf("some first carachter in file is not valid\n");
-    return 0; // some lines first character is not valid
+    return 0;
   }
   if(!checkSecondSuit(filename)){
     printf("some second carachter in file is not valid\n");
-    return 0; // some lindes second character is not valid
+    return 0;
   }
   if(!checkDuplicates(filename)){
     printf("file has duplicates\n");
-    return 0; // some lines has duplicates
+    return 0;
   }
   int numberoflines;
   char** lines = readLinesFromFile(filename,&numberoflines);
