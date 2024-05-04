@@ -3,6 +3,7 @@ typedef struct {
     char lastCommand[100];
     Card *list[11];
     Card *deck;
+    DWORD *pFlag;
 } SharedData;
 
 void init() {
@@ -50,27 +51,28 @@ void drawCard(SDL_Renderer* renderer, int x, int y, int width, int height, int v
 
 DWORD WINAPI createWindow(LPVOID lpParam) {
     SharedData* sharedData = (SharedData*)lpParam;
+    DWORD *pFlag = sharedData->pFlag;
 
     init();
 
-    SDL_Window* window = SDL_CreateWindow("SDL Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_SHOWN);
+    SDL_Window* window = SDL_CreateWindow("SDL Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 245, 600, SDL_WINDOW_SHOWN);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-    TTF_Font* font = TTF_OpenFont("font.ttf", 24);
+    TTF_Font* font = TTF_OpenFont("font.ttf", 18);
 
-    int running = 1;
-    while (running) {
+  //  int running = 1;
+    while (*pFlag) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
-                running = 0;
+                *pFlag = 0;
             }
         }
 
       SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
       SDL_RenderClear(renderer);
 
-      int cardSize = 50;
+      int cardSize = 35;
       // Draw cards
       for(int i = 0;i<7;i++){
         if(sharedData->list[i] != NULL){

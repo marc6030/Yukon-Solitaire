@@ -160,6 +160,8 @@ void playGame(Card *list[], char lastCommand[], Card** deck) {
 
         if(status == 9){
           loop = false;
+          strcpy(lastCommand, input);
+          strcpy(message,"COMMAND NOT FOUND");
         }
 
         if(status == 10){
@@ -172,7 +174,7 @@ void playGame(Card *list[], char lastCommand[], Card** deck) {
         updateEndCard(list);
 
         if(status != 10 && status != 9){
-          printf("Message: %s\n", "COMMAND NOT FOUND");
+          strcpy(message,"COMMAND NOT FOUND");
         }
         strcpy(lastCommand, input);
     }
@@ -186,24 +188,23 @@ int main(int argc, char *argv[]) {
 
     HANDLE thread;
     DWORD threadId;
+    DWORD flag = 1;
 
     // Initialize shared data
     SharedData *sharedData = (SharedData*)malloc(sizeof(SharedData));
-
-    // Create a thread to run the createWindow function
-    thread = CreateThread(NULL, 0, createWindow, sharedData, 0, &threadId);
-    if (thread == NULL) {
-        printf("Error creating thread\n");
-        return 1;
-    }
-
+    sharedData->pFlag = &flag;
 
     while(1){
       initializeGame(sharedData->list, sharedData->lastCommand,&(sharedData->deck));
-      if(deck == NULL){
-        continue;
-      }
+
+      thread = CreateThread(NULL, 0, createWindow, sharedData, 0, &threadId);
+
       playGame(sharedData->list, sharedData->lastCommand, &(sharedData->deck));
+
+      flag = 0;
+      WaitForSingleObject(thread, INFINITE);
+      CloseHandle(thread);
+      flag = 1;
     }
     return 0;
 }
